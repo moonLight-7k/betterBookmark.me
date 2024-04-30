@@ -1,6 +1,9 @@
 const fs = require("fs");
 const cheerio = require("cheerio");
 
+
+let dataCreated = false;
+
 function crawlLocalData(filePath) {
   try {
     const html = fs.readFileSync(filePath, "utf8");
@@ -43,12 +46,12 @@ function crawlAndWriteData() {
           console.error("Error writing file:", err);
         } else {
           console.log("Data crawled and saved to 'crawled_data.json'");
+          deleteImportFile(filePath);
         }
       },
     );
   } else {
-    console.log("No data crawled. Attempting to crawl the HTML file again.");
-    crawlAndWriteData();
+    console.log("❌ No data crawled. The file may not exist or is empty.");
   }
 }
 
@@ -70,6 +73,8 @@ fs.access(outputFilePath, fs.constants.F_OK, (err) => {
             crawlAndWriteData();
           } else {
             console.log("The JSON file does not contain null values.");
+            dataCreated = true;
+            deleteImportFile(filePath);
           }
         } catch (parseError) {
           console.error("Error parsing JSON:", parseError);
@@ -78,5 +83,18 @@ fs.access(outputFilePath, fs.constants.F_OK, (err) => {
     });
   }
 });
+
+function deleteImportFile(filePath) {
+  fs.unlink(filePath, (err) => {
+    if (err) {
+
+      if (!dataCreated) {
+        console.log("❌ Error deleting file, maybe alrea");
+      }
+      return;
+    }
+    console.log("✅ File deleted successfully");
+  });
+}
 
 module.exports = { crawlLocalData };
