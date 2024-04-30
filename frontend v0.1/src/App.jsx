@@ -5,12 +5,10 @@ import Categories from "./components/category.jsx"
 function App() {
 
   return (
-    <div>
+    <div >
       <Navbar />
-      <div className="mt-28">
-        <Pinned />
-        <Categories />
-      </div>
+      <Pinned />
+      <Categories />
     </div>
   )
 }

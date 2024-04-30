@@ -3,8 +3,9 @@ import Card from "./card";
 import Data from "../data/site.json";
 
 export default function Pinned() {
+    const newLocal = "flex flex-col gap-8 pt-[98px] ";
     return (
-        <div className="flex flex-col gap-8 mt-10">
+        <div className={newLocal}>
             <div className="flex gap-2 ml-12 z-1">
                 <img src={pinImg} alt="." />
                 <p className="text-[24px] text-[#ffffff83] z-1">Pinned Bookmarks</p>

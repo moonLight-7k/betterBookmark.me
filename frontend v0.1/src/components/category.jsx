@@ -2,30 +2,36 @@ import { useEffect, useState } from "react";
 import CategoryImg from "../assets/Category.svg";
 import Card from "./card";
 import Data from "../data/site.json";
-import axios from 'axios';
-
+import axios from "axios";
 
 export default function Category() {
-
   const [jsonData, setJsonData] = useState(null);
+
   useEffect(() => {
+    console.log("fetchData called");
     fetchData();
-  }, );
+  }, []);
+
+  useEffect(() => {
+    console.log("jsonData changed:", jsonData); // Log when jsonData changes
+  }, [jsonData]);
 
   const fetchData = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/bookmarks');
+      const response = await axios.get("http://localhost:5000/api/data");
       if (response.status !== 200) {
-        throw new Error('Failed to fetch JSON data');
+        throw new Error(
+          "Failed to fetch JSON data. Status: " + response.status,
+        );
       }
+      console.log("Stemp 1");
       const data = response.data;
+      console.log("Received JSON data:", data); // Log the received data
       setJsonData(data);
     } catch (error) {
-      console.error('Error fetching JSON data:', error);
+      console.error("Error fetching JSON data:", error);
     }
-  }
-
-
+  };
 
   const initialCategories = [
     { name: "All", active: true },
@@ -33,16 +39,16 @@ export default function Category() {
   ];
 
   const getCategoriesFromLocalStorage = () => {
-    const savedCategories = localStorage.getItem('categories');
+    const savedCategories = localStorage.getItem("categories");
     return savedCategories ? JSON.parse(savedCategories) : initialCategories;
   };
 
   const saveCategoriesToLocalStorage = (categories) => {
-    localStorage.setItem('categories', JSON.stringify(categories));
+    localStorage.setItem("categories", JSON.stringify(categories));
   };
 
   const [categories, setCategories] = useState(getCategoriesFromLocalStorage());
-  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryName, setNewCategoryName] = useState("");
 
   const handleCategoryClick = (index) => {
     const updatedCategories = categories.map((category, i) => ({
@@ -61,16 +67,14 @@ export default function Category() {
       ];
       setCategories(newCategories);
       saveCategoriesToLocalStorage(newCategories);
-      setNewCategoryName('');
-      document.getElementById('my_modal_2').close();
+      setNewCategoryName("");
+      document.getElementById("addCategory").close();
     }
   };
 
-
   const handleClickCount = (index) => {
     if (jsonData !== null) {
-
-      const newData = jsonData.map(item => {
+      const newData = Data.map((item) => {
         if (item.index === index) {
           return { ...item, clickCount: item.clickCount + 1 };
         }
@@ -78,12 +82,10 @@ export default function Category() {
       });
 
       setJsonData(newData);
-    }
-    else {
-      console.log("JsonData is NULL")
+    } else {
+      console.log("JsonData is NULL");
     }
   };
-
 
   return (
     <div>
@@ -103,72 +105,117 @@ export default function Category() {
         {categories.map((category, index) => (
           <button
             key={index}
-            className={`text-nowrap text-[18px] text-white py-1 px-4 duration-200 rounded-xl border-2 border-[#6F6F6F] ${category.active
-              ? "bg-[#FF5E1A] border-2 border-[#ff9161]"
-              : "bg-[#424242]"
-              }`}
+            className={` text-nowrap text-[18px] text-white py-1 px-4 duration-200 rounded-xl border-2 border-[#6F6F6F] ${
+              category.active
+                ? "bg-[#FF5E1A] border-2 border-[#ff9161]"
+                : "bg-[#424242]"
+            }`}
             onClick={() => handleCategoryClick(index)}
           >
             {category.name}
           </button>
         ))}
 
-        <button className="flex text-[18px] text-white px-2 bg-[#424242] duration-200 rounded-xl border-2 border-[#6F6F6F] hover:bg-[#FF5E1A] hover:border-2 hover:border-[#ff9161]" onClick={() => document.getElementById('my_modal_2').showModal()}>
-          <svg xmlns="http://www.w3.org/2000/svg" className="mt-1" width="1.4em" height="1.4em" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2m2-10h4V7h2v4h4v2h-4v4h-2v-4H7z"></path></svg>
-
+        <button
+          className="tooltip hover:tooltip-open flex text-[18px] text-white px-2 bg-[#424242] duration-200 rounded-xl border-2 border-[#6F6F6F] hover:bg-[#FF5E1A] hover:border-2 hover:border-[#ff9161]"
+          data-tip="Add Category"
+          onClick={() => document.getElementById("addCategory").showModal()}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="mt-1"
+            width="1.4em"
+            height="1.4em"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              d="M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2m2-10h4V7h2v4h4v2h-4v4h-2v-4H7z"
+            ></path>
+          </svg>
         </button>
 
-        <dialog id="my_modal_2" className="modal p-4 rounded-md bg-[#323232] drop-shadow-2xl">
-
-          <div className="modal-box w-[40vw] h-[60vh]">
-            <p className="p-6 text-2xl text-white text-center">Create Category!</p>
+        <dialog
+          id="addCategory"
+          className="modal p-4 rounded-md bg-[#3232320f] backdrop-blur-sm duration-100"
+        >
+          <div className="modal-box bg-[#323232]  border-[1px] border-[#ffffff2a] drop-shadow-xl duration-300">
+            <p className="p-6 text-2xl text-white text-center">
+              Create Category!
+            </p>
 
             <div className="modal-action flex justify-center mt-8 ">
-              <form className="flex flex-col gap-8 mx-10 mb-10" onSubmit={handleCreateCategory} >
-                <div className="flex flex-col justify-center w-80 gap-4" >
+              <form
+                className="flex flex-col gap-8 mx-10 mb-10"
+                onSubmit={handleCreateCategory}
+              >
+                <div className="flex flex-col justify-center w-80 gap-4">
                   <div>
-                    <label htmlFor="category" className="text-white" >Name*</label>
+                    <label htmlFor="category" className="text-white">
+                      Name*
+                    </label>
                     <input
                       type="text"
                       placeholder="Type here..."
-                      className="text-white justify-center input input-bordered w-full max-w-xs p-2 bg-[#424242] rounded-md border-[1px] border-[#9d9d9d9c]"
+                      className="text-white justify-center input input-bordered w-full max-w-xs p-2 bg-[#424242] rounded-md border-[1px] focus:border-[#9d9d9d9c]"
                       value={newCategoryName}
                       onChange={(e) => setNewCategoryName(e.target.value)}
                       required
                     />
                   </div>
                   <div>
-                    <label htmlFor="category" className="text-[#ffffff9e]" >Add Bookmarks</label>
-                    <select className="select select-bordered text-[#ffffff9e] justify-center input input-bordered w-full max-w-xs p-2 bg-[#424242] rounded-md border-[1px] border-[#9d9d9d9c]">
-                      <option disabled selected>Select </option>
+                    <label htmlFor="category" className="text-[#ffffff9e]">
+                      Add Bookmarks
+                    </label>
+                    <select className="select select-bordered text-[#ffffff9e] justify-center input w-full max-w-xs p-2 bg-[#424242] rounded-md border-[1px] focus:border-[#9d9d9d9c] ">
+                      <option disabled selected>
+                        Select{" "}
+                      </option>
                       <option>Han Solo</option>
                       <option>Greedo</option>
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="category" className="text-[#ffffff9e]" >Tags</label>
-                    <input type="text" placeholder="Type here..." className="text-white justify-center input input-bordered w-full max-w-xs p-2 bg-[#424242] rounded-md border-[1px] border-[#9d9d9d9c]" />
+                    <label htmlFor="category" className="text-[#ffffff9e]">
+                      Tags
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Type here..."
+                      className="text-white justify-center input input-bordered w-full max-w-xs p-2 bg-[#424242] rounded-md border-[1px] focus:border-[#9d9d9d9c]"
+                    />
                   </div>
                 </div>
-                <button type="submit" className="text-white p-2 px-4 rounded-lg text-center bg-[#fa6323] hover:shadow-lg hover:shadow-[#00000090] duration-300">Create Category</button>
+                <div className="flex flex-col gap-4">
+                  <button
+                    type="submit"
+                    className="text-white p-2 px-4 rounded-lg text-center bg-[#fa6323] hover:shadow-lg hover:shadow-[#00000090] duration-300"
+                  >
+                    Create Category
+                  </button>
+
+                  <button
+                    type="button"
+                    className="text-white p-2 px-4 rounded-lg text-center bg-[#6a6a6a99] border-[1px] border-[#fff0] hover:border-[1px] hover:border-[#ffffff7c]  duration-300"
+                    onClick={() => {
+                      document.getElementById("addCategory").close();
+                    }}
+                  >
+                    {" "}
+                    Esc
+                  </button>
+                </div>
               </form>
             </div>
           </div>
-
-        </dialog >
-
+        </dialog>
       </div>
 
-      <div className=" flex flex-wrap lg:gap-6 md:gap-4 sm:gap-2 justify-center overflow-hidden scrollbar-hide pb-10 px-12 mt-8 ">
+      <div className="flex flex-wrap lg:gap-6 md:gap-4 sm:gap-2 justify-center overflow-hidden scrollbar-hide pb-10 px-12 mt-8 ">
         {Data.map((data, index) => (
-          <Card
-            key={index}
-            link={data.site}
-            count={data.clickCount}
-            onClick={handleClickCount(index)}
-          />
+          <Card key={index} link={data.site} count={data.clickCount} />
         ))}
       </div>
-    </div >
+    </div>
   );
 }
