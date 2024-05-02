@@ -72,20 +72,20 @@ export default function Category() {
     }
   };
 
-  const handleClickCount = (index) => {
-    if (jsonData !== null) {
-      const newData = Data.map((item) => {
-        if (item.index === index) {
-          return { ...item, clickCount: item.clickCount + 1 };
-        }
-        return item;
-      });
+  // const handleClickCount = (index) => {
+  //   if (jsonData !== null) {
+  //     const newData = Data.map((item) => {
+  //       if (item.index === index) {
+  //         return { ...item, clickCount: item.clickCount + 1 };
+  //       }
+  //       return item;
+  //     });
 
-      setJsonData(newData);
-    } else {
-      console.log("JsonData is NULL");
-    }
-  };
+  //     setJsonData(newData);
+  //   } else {
+  //     console.log("JsonData is NULL");
+  //   }
+  // };
 
   return (
     <div>
@@ -105,11 +105,10 @@ export default function Category() {
         {categories.map((category, index) => (
           <button
             key={index}
-            className={` text-nowrap text-[18px] text-white py-1 px-4 duration-200 rounded-xl border-2 border-[#6F6F6F] ${
-              category.active
-                ? "bg-[#FF5E1A] border-2 border-[#ff9161]"
-                : "bg-[#424242]"
-            }`}
+            className={` text-nowrap text-[18px]  py-1 px-4 duration-200 rounded-xl border-2 ${category.active
+              ? "bg-[#FF5E1A] border-2 border-[#ff986c] text-white"
+              : "bg-[#424242] text-[#ffffff98] border-[#6f6f6faf] duration-300 hover:scale-[97%] "
+              }`}
             onClick={() => handleCategoryClick(index)}
           >
             {category.name}
@@ -117,22 +116,18 @@ export default function Category() {
         ))}
 
         <button
-          className="tooltip hover:tooltip-open flex text-[18px] text-white px-2 bg-[#424242] duration-200 rounded-xl border-2 border-[#6F6F6F] hover:bg-[#FF5E1A] hover:border-2 hover:border-[#ff9161]"
+          className="tooltip hover:tooltip-open flex text-[18px] text-[#ffffffa2] hover:text-white px-2 bg-[#424242] duration-200 rounded-xl border-2 border-[#6F6F6F] hover:bg-[#FF5E1A] hover:border-2 hover:border-[#ff9161]"
           data-tip="Add Category"
           onClick={() => document.getElementById("addCategory").showModal()}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="mt-1"
-            width="1.4em"
-            height="1.4em"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2m2-10h4V7h2v4h4v2h-4v4h-2v-4H7z"
-            ></path>
-          </svg>
+          <span className="flex mt-1 gap-1">
+
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" className="mt-[2px]" height="1.2em" viewBox="0 0 512 512">
+              <path fill="none" stroke="currentColor" strokeLinecap="square" strokeLinejoin="round" strokeWidth={44} d="M256 112v288m144-144H112"></path>
+
+            </svg>
+          </span>
+
         </button>
 
         <dialog
@@ -189,19 +184,18 @@ export default function Category() {
                 <div className="flex flex-col gap-4">
                   <button
                     type="submit"
-                    className="text-white p-2 px-4 rounded-lg text-center bg-[#fa6323] hover:shadow-lg hover:shadow-[#00000090] duration-300"
+                    className="text-white p-2 px-4 rounded-lg text-center bg-[#fa6323] hover:shadow-lg hover:shadow-[#00000090] duration-300 border-2 border-[#fff0] hover:border-2 hover:border-[#ff986c] "
                   >
                     Create Category
                   </button>
 
                   <button
                     type="button"
-                    className="text-white p-2 px-4 rounded-lg text-center bg-[#6a6a6a99] border-[1px] border-[#fff0] hover:border-[1px] hover:border-[#ffffff7c]  duration-300"
+                    className="text-white p-2 px-4 rounded-lg text-center bg-[#45454568] border-2 border-[#fff0] hover:border-[2px] hover:border-[#ffffff3f]  duration-300"
                     onClick={() => {
                       document.getElementById("addCategory").close();
                     }}
                   >
-                    {" "}
                     Esc
                   </button>
                 </div>
@@ -211,7 +205,7 @@ export default function Category() {
         </dialog>
       </div>
 
-      <div className="flex flex-wrap lg:gap-6 md:gap-4 sm:gap-2 justify-center overflow-hidden scrollbar-hide pb-10 px-12 mt-8 ">
+      <div className="flex flex-wrap lg:gap-6 md:gap-4 sm:gap-2 justify-center overflow-hidden scrollbar-hide pb-10 px-12 pt-10 ">
         {Data.map((data, index) => (
           <Card key={index} link={data.site} count={data.clickCount} />
         ))}
